@@ -1,22 +1,9 @@
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
-
-try:
-    import builtins
-except ImportError:
-    import __builtin__ as builtins
+from . import unittest, mock, json_response, CONFIG_EXAMPLE, builtins
 
 from os.path import *
 import tempfile
 
-import mock
-
 from .. import config
-
-# Example config
-CONFIG_EXAMPLE = join(dirname(dirname(dirname(__file__))), 'redsample.config.example')
 
 class TestGetConfig(unittest.TestCase):
     def test_loads_config(self):

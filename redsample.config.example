@@ -5,4 +5,5 @@ apikey: fromyouraccount
 # The id of the project that will contain your samples
 sampleprojectid: samples
 # The id of the tracker that will be assigned to your samples
-sampletrackerid: Sample
+# has to be the id not the name
+sampletrackerid: 1
