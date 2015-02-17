@@ -15,3 +15,5 @@ RedSample
 =========
 
 Use `Redmine <http://www.redmine.org>`_ to manage sample data
+
+Documentation is hosted on Read The Docs `here <http://redsample.readthedocs.org>`_
