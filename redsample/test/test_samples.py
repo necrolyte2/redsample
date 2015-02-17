@@ -1,5 +1,7 @@
 from . import unittest, mock, json_response, CONFIG_EXAMPLE, builtins
 
+from redmine.managers import ResourceManager
+
 from .. import samples, config
 Samples = samples.Samples
 
@@ -32,6 +34,10 @@ class TestRedSample(unittest.TestCase):
             self.config['sampletrackerid'],
             _samples.resource_class.tracker_id
         )
+
+    def test_returns_normal_redmine_resource_managers(self):
+        resource = self.redsample.Issue
+        self.assertIsInstance(resource, ResourceManager)
 
 class TestSamplesmanager(unittest.TestCase):
     def setUp(self):
