@@ -1,0 +1,8 @@
+# web url to your redmine instance
+siteurl: https://www.example.com
+# Your api key located under My Account
+apikey: fromyouraccount
+# The id of the project that will contain your samples
+sampleprojectid: samples
+# The id of the tracker that will be assigned to your samples
+sampletrackerid: Sample
