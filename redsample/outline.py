@@ -9,12 +9,11 @@ from collections import namedtuple
 from redmine import Redmine
 import pandas as pd
 import operator
-from redsample import DEFAULT
 #TODO: How to test properly?
 #TODO: Do we have to get all issue results and filter manually? Might be more trusty
 # Just load all issues once and check sample against them
 #TODO: How to avoid making this code wedlocked with the APIs?
-config = config.load_config(DEFAULT)
+config = config.load_default()
 redmine = Redmine(config['siteurl'], key=config['apikey'])
 #make_run_block = partial(redmine.issue_relation.create, config['runid'], relation_type='blocks')
 create_sample_issue = partial(redmine.issue.create, project_id=config['sampleprojectid'], tracker_id=config['sampletrackerid'])
