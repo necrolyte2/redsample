@@ -29,10 +29,6 @@ _other_name_,foo,,,,,,,,,
 fo-o,foo,,,,,,,,,
 bar,baz,,,,,,,,,'''
 
-#def test_get_csv_from_samplesheet(self):
-#    expected = '''Sample_ID,Sample_Name,Sample_Plate,Sample_Well,I7_Index_ID,index,I5_Index_ID,index2,GenomeFolder,Sample_Project,Description'''
-#    actual = outline.get_csv_substring(self.sheet)
-
     def test_ss_to_data_frame(self):
         df = outline.sample_sheet_to_df(self.sheet)
         actual = df.ix[0].tolist()
@@ -41,18 +37,6 @@ bar,baz,,,,,,,,,'''
          float("nan"), float("nan") ]
         #Note: nan will never equal nan, so slice
         self.assertEquals(expected[:-2], actual[:-2])
-
-#    def test_read_sample_sheet(self):
-#        expected = [("011515DV1-WesPac74", "011515DV1-WesPac74"), ("00132-06","00132-06")]
-#        samples = outline.read_sample_sheet(self.sheet)
-#        actual = [(sample.name, sample.sample_id) for sample in samples[:2]]
-#        self.assertEquals(expected[0], actual[0])
-#        self.assertEquals(expected[1], actual[1])
-
-#api_key='a192502d2a96958bdd4231b5f2292e5b2ae13e1a'
-#redmine = Redmine('https://www.vdbpm.org', key=api_key)
-#all = redmine.issue.all(project_id=18, tracker_id=6)
-#print all[0]
 
 
 responses = {
