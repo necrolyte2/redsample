@@ -1,9 +1,44 @@
 # web url to your redmine instance
-siteurl: https://www.example.com
+siteurl: http://demo.redmine.org
 # Your api key located under My Account
 apikey: fromyouraccount
 # The id of the project that will contain your samples
-sampleprojectid: samples
+sampleprojectid: RedsampleTest
 # The id of the tracker that will be assigned to your samples
 # has to be the id not the name
 sampletrackerid: 1
+
+#If there isn't an API Key use these instead
+username: averagehat
+password: vdbwrair
+
+runtrackerid: 3
+runprojectid: RedSampleRun
+
+samplefields:
+- Needs Review
+- Pathogen
+- SRNum
+- CollectionLocation
+- Collaborator
+- Collection Date
+- Sample Type
+- Accession
+- Genbank Ready
+- PR Name
+- Synced Date
+- Media
+- Received
+- Study
+- InfA Ct
+- InfB Ct
+- RNaseP Ct
+- swInfA Ct
+- swH1 Ct
+- AH3 Ct 
+# Currently ignored
+runfields: 
+- Platform
+- Run Name
+- SampleList
+- SamplesSynced

@@ -9,17 +9,26 @@ from collections import namedtuple
 from redmine import Redmine
 import pandas as pd
 import operator
+from redmine import exceptions
+import shutil
+
 #TODO: How to test properly?
 #TODO: Do we have to get all issue results and filter manually? Might be more trusty
 # Just load all issues once and check sample against them
 #TODO: How to avoid making this code wedlocked with the APIs?
 config = config.load_default()
-redmine = Redmine(config['siteurl'], key=config['apikey'])
+if not config['apikey'] or config['apikey'] in ['fromyouraccount', 'default']:
+    redmine = Redmine(config['siteurl'], username=config['username'], password=config['password'])
+else:
+    redmine = Redmine(config['siteurl'], key=config['apikey'])
+
 #make_run_block = partial(redmine.issue_relation.create, config['runid'], relation_type='blocks')
 create_sample_issue = partial(redmine.issue.create, project_id=config['sampleprojectid'], tracker_id=config['sampletrackerid'])
+create_run_issue = partial(redmine.issue.create, project_id=config['runprojectid'], tracker_id=config['runtrackerid'])
 raw_all_samples = partial( redmine.issue.all, project_id=config['sampleprojectid'], tracker_id=config['sampletrackerid'], limit=100)
-Sample = namedtuple("Sample", ("name", "sample_id"))
 make_run_block = partial(redmine.issue_relation.create, relation_type='blocks')
+Sample = namedtuple("Sample", ("name", "ignore"))
+
 def sample_sheet_to_df(filehandle):
     '''
     :param file SampleSheet.csv
@@ -27,11 +36,9 @@ def sample_sheet_to_df(filehandle):
     '''
     s = filehandle.read()
     meta_info_striped = io.BytesIO(s[s.find('[Data]') + len('[Data]'):].strip())
+    filehandle.close()
     return pd.read_csv(meta_info_striped)
 
-def read_sample_sheet(filehandle):
-    df = sample_sheet_to_df(filehandle)
-    return map(Sample, df['Sample_ID'].tolist(), df['Sample_Name'].tolist())
 
 
 def all_samples(offset=0):
@@ -52,6 +59,9 @@ def get_issue_pr_name(issue):
         pr_resource =  filter_one(lambda a: a['name'] == 'PR Name', issue.custom_fields.resources)
     except KeyError:
         print("Warning, issue {0} had no PR Name field.".format(issue))
+        return ''
+    except exceptions.ResourceAttrError:
+        print("Warning, issue {0} had no Custom fields.".format(issue))
         return ''
     return str(pr_resource['value']) if pr_resource else ''
 
@@ -81,8 +91,11 @@ def find_sample(sample, issues):
 def filter_subject(string):
     return re.sub(r'[-/\s]', '_', string).upper()
 
+def make_sample(sample):
+    subject=sample.name
+
 def get_or_create(sample, issues):
-    issue = find_sample(sample, issues) or create_sample_issue(subject=sample.name)
+    issue = find_sample(sample, issues) or create_sample_issue(subject=filter_subject(sample.name))
     return issue.id
 
 def match_pr_name(left, right):
@@ -105,25 +118,36 @@ def sample_id_map_str(sample_id_map):
 
 def make_run_issue(run_name, samples):
     #TODO: could include platform
-    sample_names = '\n'.join(s.name for s in samples)
-    return create_sample_issue(subject=run_name, custom_fields=
-                               {"Run Name" : run_name, "SampleList" : sample_names,
-                                 "Samples Synced" : "No"})
+    #sample_names = '\n'.join(s.name for s in samples)
+    return create_run_issue(subject=run_name, custom_fields=
+                               {"Run Name" : run_name, "Samples Synced" : "No"})
 
 #TODO: How should the samples be named that have PR Names?
-def execute(csv_file_path):
-    csv_file, run_name = open(csv_file_path), os.path.split(csv_file_path)[-2]
-    samples = read_sample_sheet(csv_file)
+def execute(csv_file, run_name):
+    df = sample_sheet_to_df(csv_file)
+    samples = map(Sample, df.Sample_Name, df.Sample_ID)
     run_issue = make_run_issue(run_name, samples)
     sample_id_map = sync_samples(samples)
     #make_this_run_block = lambda a, runid=run_issue.id: make_this_run_block(issue_id=runid, to_id=a)
     make_this_run_block = lambda a: make_run_block(issue_id=run_issue.id, to_id=a)
-    map(make_run_block, sample_id_map.values())
-    return sample_id_map_str(sample_id_map)
+    map(make_this_run_block, sample_id_map.values())
+    df.Sample_Name = df.Sample_Name.apply(sample_id_map.__getitem__)
+    return df, sample_id_map_str(sample_id_map)
 
 def main():
-    csv_file = sys.argv[1]
-    print( execute(csv_file))
-    return 0
-
+    csv_file_path = sys.argv[1]
+    csv_file, run_name = open(csv_file_path), os.path.split(csv_file_path)[-2]
+    #Save a backup of the samplesheet
+    shutil.copyfile(csv_file_path, '.'.join([csv_file_path, 'bak'] ))
+    df, mapping_str =  execute(csv_file, run_name)
+    print(mapping_str)
+    #Have to set index in order for output to look right
+    csv =  df.set_index('Sample_Name').to_csv()
+    s = open(csv_file_path).read()
+    metadata = s[:s.find('[Data]')+len('[Data]')]
+    new_sample_sheet = '\n'.join([metadata, csv])
+    sample_mapping_path = os.path.join(run_name, 'SampleMapping.txt')
+    with open(csv_file_path, 'w') as ss, open(sample_mapping_path, 'w') as smp:
+        ss.write(new_sample_sheet)
+        smp.write(mapping_str)
 

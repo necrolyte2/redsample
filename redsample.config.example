@@ -6,4 +6,35 @@ apikey: fromyouraccount
 sampleprojectid: samples
 # The id of the tracker that will be assigned to your samples
 # has to be the id not the name
-sampletrackerid: 1
+sampletrackerid: 1 
+# for automatically creating the runs:
+runtrackerid: 3
+runprojectid: 4
+
+samplefields:
+- Needs Review
+- Pathogen
+- SRNum
+- CollectionLocation
+- Collaborator
+- Collection Date
+- Sample Type
+- Accession
+- Genbank Ready
+- PR Name
+- Synced Date
+- Media
+- Received
+- Study
+- InfA Ct
+- InfB Ct
+- RNaseP Ct
+- swInfA Ct
+- swH1 Ct
+- AH3 Ct 
+# Currently ignored
+runfields: 
+- Platform
+- Run Name
+- SampleList
+- SamplesSynced

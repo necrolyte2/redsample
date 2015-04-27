@@ -12,5 +12,8 @@ setup(
     description = 'Use redmine to manage sample data',
     license = 'GPL v2',
     keywords = 'inventory, sample, management, redmine',
-    url = 'https://github.com/VDBWRAIR/redsample'
+    url = 'https://github.com/VDBWRAIR/redsample',
+    entry_points = {
+        'console_scripts': ['load_sample_sheet = resample.outline:main']
+    }
 )
