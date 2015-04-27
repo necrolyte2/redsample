@@ -2,7 +2,7 @@ import os.path
 import yaml
 
 
-DEFAULT_PATH = 'redsample.config.default'
+DEFAULT_PATH = './redsample.config.default'
 
 def load_config(configpath):
     '''
@@ -25,6 +25,5 @@ def load_user_config():
     return load_config(get_user_config_path())
 
 def load_default():
-    path = get_user_config_path() or DEFAULT_PATH
-    return load_config(path)
+    return load_user_config() or load_config(DEFAULT_PATH)
 

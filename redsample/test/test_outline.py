@@ -4,12 +4,13 @@ from redsample import config
 from redsample import outline
 from collections import namedtuple
 import io
-
+import os
+from os import path
 '''
 cut until after [Data] header
 parse as CSV using pandas
 '''
-
+THISD = path.dirname(path.abspath(__file__))
 def create():
     for i in [-1, 3, 5, 8, 4]: yield mock.MagicMock(id=i)
 def all_issue_hits(**kwargs):
@@ -19,7 +20,7 @@ def all_issue_hits(**kwargs):
 class TestSampleSheet(unittest.TestCase):
 
     def setUp(self):
-        self.sheet = open('test/SampleSheet.csv')
+        self.sheet = open(path.join(THISD, 'SampleSheet.csv'))
 
 #def test_get_csv_from_samplesheet(self):
 #    expected = '''Sample_ID,Sample_Name,Sample_Plate,Sample_Well,I7_Index_ID,index,I5_Index_ID,index2,GenomeFolder,Sample_Project,Description'''
