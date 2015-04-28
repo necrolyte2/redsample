@@ -46,7 +46,6 @@ responses = {
         'filter': {'issues': [{'subject': 'sample1', 'id': 1},{'subject': 'sample2', 'id': 2}]},
     }
 }
-#Missue = namedtuple("Missue", ("subject", "custom_fields.resources", "id"))
 
 
 def Missue(a, b, c):
@@ -163,8 +162,7 @@ bar,baz,,,,,,,,,'''
         #Need this because dicts are unhashable
         map(self.assertTrue, map(mcreate.call_args_list.__contains__, map(lambda x: mock.call(subject=x), samplenames)))
         #map(self.assertTrue, map(mblock.call_args_list.__contains__, map(mock.call, [3, 5, 8, 4])))
-        expected_run_issue_call = mock.call(custom_fields={ 'Samples Synced' : 'No',
-                                                   'Run Name' : 'somedir'},
+        expected_run_issue_call = mock.call(custom_fields=[{'id' : 4, 'value' : 'somedir'}],
                                     subject='somedir')
         self.assertEquals(expected_run_issue_call, rcreate.call_args_list[0])
 
