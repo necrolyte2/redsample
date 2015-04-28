@@ -209,25 +209,24 @@ bar,baz,,,,,,,,,'''
         self.assertEquals(sampleids, actual_ids)
         self.assertEquals(issue_ids, actual_names)
 
-class TestOutlineIntegration(unittest.TestCase):
-    #TODO: mock load config
-    def setUp(self):
-        self.ss_string = '''[crud]asdf\n\n[morecrud]asdf\nData\n[Data]\n
-Sample_Name,Sample_ID,Sample_Plate,Sample_Well,I7_Index_ID,index,I5_Index_ID,index2,GenomeFolder,Sample_Project,Description
-_name_,_name_,,,,,,,,,
-_other_name_,foo,,,,,,,,,
-fo-o,foo,,,,,,,,,
-bar,baz,,,,,,,,,'''
-        #self.config_path = os.path.join(THISD, config.test)
-        with mock.patch('__builtin__.open', mock.mock_open(read_data=self.ss_string), create = True) as m:
-            outline.execute(open('somedir/nonsense'), 'somedir')
-
+#TODO: Maybe integration tests? Don't have a test site and don't have admin on demo.redmine
+#class TestOutlineIntegration(unittest.TestCase):
+#    #TODO: mock load config
+#    def setUp(self):
+#        self.ss_string = '''[crud]asdf\n\n[morecrud]asdf\nData\n[Data]\n
+#Sample_Name,Sample_ID,Sample_Plate,Sample_Well,I7_Index_ID,index,I5_Index_ID,index2,GenomeFolder,Sample_Project,Description
+#_name_,_name_,,,,,,,,,
+#_other_name_,foo,,,,,,,,,
+#fo-o,foo,,,,,,,,,
+#bar,baz,,,,,,,,,'''
+#        #self.config_path = os.path.join(THISD, config.test)
+#
 #    def test_sample_issues_are_added(self):
-#      #  with mock.patch('__builtin__.open', mock.mock_open(read_data=self.ss_string), create = True) as m:
-#      #      outline.execute(open('somedir/nonsense'), 'somedir')
+#        with mock.patch('__builtin__.open', mock.mock_open(read_data=self.ss_string), create = True) as m:
+#            outline.execute(open('somedir/nonsense'), 'somedir')
 #        sample_issues = outline.raw_all_samples()
 #        actual_subjects = set([s.id for s in sample_issues])
-#        expected_subjects = set(['_name_', '_other_name_', 'fo_o', 'bar'])
+#        expected_subjects = set(['_NAME_', '_OTHER_NAME_', 'FO_O', 'BAR'])
 #        self.assertEquals(expected_subjects, actual_subjects)
 #        e_fields = ['Pathogen', 'Study', 'PR Name']
 #        for issue in sample_issues:
@@ -235,8 +234,8 @@ bar,baz,,,,,,,,,'''
 #           in_fields = map(fields.__contains__, e_fields)
 #           map(self.assertTrue, in_fields)
 #
-#    def test_run_issue_was_added(self):
-#        pass
+##    def test_run_issue_was_added(self):
+##        pass
 #
 #
 #
