@@ -14,6 +14,9 @@ setup(
     keywords = 'inventory, sample, management, redmine',
     url = 'https://github.com/VDBWRAIR/redsample',
     entry_points = {
-        'console_scripts': ['load_sample_sheet = resample.outline:main']
+        'console_scripts': [
+            'load_sample_sheet = resample.outline:main',
+            'poll_and_rsync = redsample.autosync:main'
+        ]
     }
 )

@@ -16,6 +16,9 @@ runtrackerid: 3
 runprojectid: RedSampleRun
 runnameid: 4
 
+destinationpath: /home/EIDRUdata/NGSData
+runbasepath: /Instruments/MiSeq
+
 samplefields:
 - Needs Review
 - Pathogen

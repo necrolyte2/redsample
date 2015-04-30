@@ -11,6 +11,7 @@ import pandas as pd
 from redmine import exceptions
 import shutil
 
+
 #TODO: Currently we just load all issues once and check sample against them, should provide another option?
 config = config.load_default()
 if not config['apikey'] or config['apikey'] in ['fromyouraccount', 'default']:
@@ -18,13 +19,47 @@ if not config['apikey'] or config['apikey'] in ['fromyouraccount', 'default']:
 else:
     redmine = Redmine(config['siteurl'], key=config['apikey'])
 
-#make_run_block = partial(redmine.issue_relation.create, config['runid'], relation_type='blocks')
+def compose(outer, inner):
+    ''' compose(f, g)(x) == f(g(x)) '''
+    def newfunc(*args, **kwargs):
+        return outer(inner(*args, **kwargs))
+    return newfunc
+
+def save_value(obj, attr, value):
+    setattr(obj, attr, value)
+    obj.save()
+
+def get_custom_field(issue, fname):
+    try:
+        return [d['value'] for d in issue.custom_fields.resources if d['name'] == fname][0]
+    except (exceptions.ResourceAttrError, KeyError, IndexError):
+        print("Warning, issue {0} did not have custom field {1}".format(issue, fname))
+
+#TODO: use a custom (restricted?) field techs won't use instead of progress bar.
+'''
+update_status = partial(update_custom_field, cf_id=cfg['runprojectstatus'])
+def update_custom_field(issue, cf_id, new_value):
+    cf = issue.custom_fields.get(cf_id) #internal id
+    update_cf(cf, new_value)
+'''
+
+''' For autosync '''
+update_percent_done = partial(save_value, attr='done_ratio')
+update_cf_by_id = partial(save_value, attr='value')
+is_new_run = lambda r: r.done_ratio < 100
+find_new_run = partial(filter, is_new_run)
+get_my_runs = partial(redmine.issue.filter, project_id=config['runprojectid'], tracker_id=config['runtrackerid'], assigned_to_id='me')
+get_my_new_runs = compose(find_new_run, get_my_runs)
+get_run_name = partial(get_custom_field, fname='Run Name')
+
+get_issue_pr_name = partial(get_custom_field, fname='PR Name')
+''' for sample syncing'''
 create_sample_issue = partial(redmine.issue.create, project_id=config['sampleprojectid'], tracker_id=config['sampletrackerid'])
 create_run_issue = partial(redmine.issue.create, project_id=config['runprojectid'], tracker_id=config['runtrackerid'])
 raw_all_samples = partial( redmine.issue.all, project_id=config['sampleprojectid'], tracker_id=config['sampletrackerid'], limit=100)
 make_run_block = partial(redmine.issue_relation.create, relation_type='blocks')
+#placeholder for class
 Sample = namedtuple("Sample", ("name", "ignore"))
-raw_all_samples = partial( redmine.issue.all, project_id=18, tracker_id=6, limit=100)
 
 def sample_sheet_to_df(filehandle):
     '''
@@ -49,19 +84,9 @@ def all_samples(offset=0):
 
 
 def filter_one(func, iterable):
+    ''' Get the first match for the boolean function, or None if not found. '''
     result = filter(func, iterable)
     return None if not result else result[0]
-
-def get_issue_pr_name(issue):
-    try:
-        pr_resource =  filter_one(lambda a: a['name'] == 'PR Name', issue.custom_fields.resources)
-    except KeyError:
-        print("Warning, issue {0} had no PR Name field.".format(issue))
-        return ''
-    except exceptions.ResourceAttrError:
-        print("Warning, issue {0} had no Custom fields.".format(issue))
-        return ''
-    return str(pr_resource['value']) if pr_resource else ''
 
 def subj_match(issue, sample):
     return filter_subject(issue['subject']) == filter_subject(sample.name)
@@ -69,8 +94,6 @@ def subj_match(issue, sample):
 def pr_match(issue, sample):
     return filter_subject(get_issue_pr_name(issue)) == filter_subject(sample.name)
 
-#def match(op, left, l_getter, right, r_getter):
-#    return op(l_getter(left), r_getter(right))
 
 def find_sample(sample, issues):
     '''
@@ -81,13 +104,11 @@ def find_sample(sample, issues):
     #subject = re.sub( r'[!"#$%&\'()*+,-\./:;<=>?@\[\\\]^`{|}~]', '_', origsubject)
     subj_eq, pr_eq = partial(subj_match, sample=sample), partial(pr_match, sample=sample)
     return filter_one(subj_eq, issues) or filter_one(pr_eq, issues)
-#   subject_matches = [i for i in issues if i.subject == sample.name]
-#   if subject_matches:
-#       return subject_matches[0]
-#   pr_matches = [i for i in issues if i['PR Name'] == sample.name]
 
 def filter_subject(string):
     ''' replace hyphen, slash, and space with underscores.'''
+    if string is None:
+        return ''
     return re.sub(r'[-/\s]', '_', string).upper()
 
 def get_or_create(sample, issues):

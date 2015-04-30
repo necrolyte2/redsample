@@ -5,7 +5,7 @@ from redsample import outline
 import os
 from os import path
 from functools import partial
-import shutil
+
 '''
 cut until after [Data] header
 parse as CSV using pandas
