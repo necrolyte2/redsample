@@ -1,3 +1,4 @@
 python-redmine
 pyyaml
 pandas
+future

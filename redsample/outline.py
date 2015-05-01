@@ -10,7 +10,7 @@ from redmine import Redmine
 import pandas as pd
 from redmine import exceptions
 import shutil
-
+from past.builtins import map, filter
 
 #TODO: Currently we just load all issues once and check sample against them, should provide another option?
 config = config.load_default()

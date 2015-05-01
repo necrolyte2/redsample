@@ -1,7 +1,7 @@
 
 from __future__ import print_function
 import mock
-import unittest
+from . import unittest
 from redsample import outline, autosync
 
 def ReadyRun():
