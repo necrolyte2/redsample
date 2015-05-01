@@ -38,7 +38,7 @@ class TestAutoSync(unittest.TestCase):
         self.assertEquals(run.save.call_count, 2)
         self.assertEquals(run.done_ratio, 100)
 
-    @mock.patch('redsample.outline.get_my_runs', side_effect=NotReady)
+    @mock.patch('redsample.autosync.get_my_new_runs', side_effect=list)
     def test_sync_not_called_on_high_percent(self, _):
         with self.assertRaises(SystemExit):
             autosync.start()
