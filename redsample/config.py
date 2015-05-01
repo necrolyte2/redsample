@@ -18,7 +18,10 @@ def load_user_config():
     :return: yaml dict
     '''
     p = os.path.join(os.path.expanduser('~/'), '.redsample.config')
-    return load_config(p)
+    try:
+       return load_config(p)
+    except OSError:
+        pass
 
 def load_default():
     return load_user_config() or load_config(DEFAULT_PATH)
