@@ -7,9 +7,8 @@ from os import path
 from functools import partial
 from past.builtins import map
 #from . import builtins
-
-from sys import version_info
-if version_info.major == 2:
+import sys
+if sys.version[0] == '2':
         import __builtin__ as builtins  # pylint:disable=import-error
 else:
         import builtins  # pylint:disable=import-error
