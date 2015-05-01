@@ -6,6 +6,13 @@ import os
 from os import path
 from functools import partial
 from past.builtins import map
+#from . import builtins
+
+from sys import version_info
+if version_info.major == 2:
+        import __builtin__ as builtins  # pylint:disable=import-error
+else:
+        import builtins  # pylint:disable=import-error
 '''
 cut until after [Data] header
 parse as CSV using pandas
@@ -150,7 +157,8 @@ bar,baz,,,,,,,,,'''
     def test_execute_functional_create_all(self,  mcreate, mall, mblock, rcreate):
         mcreate.side_effect = create()
         self.response.json = json_response( {'issues': [{'subject': 'sample1', 'id': 1, 'custom_fields' : [{}]},{'subject': 'sample2', 'id': 2, 'custom_fields' : [{}]}]})
-        with mock.patch('__builtin__.open', mock.mock_open(read_data=self.ss_string), create = True) as m:
+        with mock.patch.object(builtins, 'open', mock.mock_open(read_data=self.ss_string), create = True) as m:
+        #with mock.patch('__builtin__.open', mock.mock_open(read_data=self.ss_string), create = True) as m:
             actual_df, mapping_str = outline.execute(open('somedir/nonsense'), 'somedir')
             actual_str = set(mapping_str.split('\n'))
         expected = set("Sample Name\tIssue ID\n_name_\t3\n_other_name_\t5\nfo-o\t8\nbar\t4".split('\n'))
@@ -198,8 +206,10 @@ bar,baz,,,,,,,,,'''
 # Should strip?
         mcreate.side_effect = create()
         self.response.json = json_response( {'issues': [{'subject': 'sample1', 'id': 1, 'custom_fields' : [{}]},{'subject': 'sample2', 'id': 2, 'custom_fields' : [{}]}]})
-        with mock.patch('__builtin__.open', mock.mock_open(read_data=self.ss_string), create = True) as m:
-            actual_df, mapping_str = outline.execute(open('somedir/nonsense'), 'somedir')
+        #with mock.patch('__builtin__.open', mock.mock_open(read_data=self.ss_string), create = True) as m:
+        with mock.patch.object(builtins, 'open', mock.mock_open(read_data=self.ss_string)): #, create = True) as m:
+            with open('_') as handle:
+                actual_df, mapping_str = outline.execute(handle, 'somedir')
             #actual_df, mapping_str = outline.execute('somedir/nonsense')
         issue_ids =  [3, 5, 8, 4]
         sampleids = ['_name_', 'foo', 'foo', 'baz']

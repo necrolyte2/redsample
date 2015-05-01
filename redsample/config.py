@@ -20,7 +20,7 @@ def load_user_config():
     p = os.path.join(os.path.expanduser('~/'), '.redsample.config')
     try:
        return load_config(p)
-    except OSError:
+    except IOError:
         pass
 
 def load_default():

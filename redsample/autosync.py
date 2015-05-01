@@ -4,7 +4,7 @@ from miseqpipeline import miseq_sync
 from functools import partial
 import os
 import sys
-from outline import get_run_name, get_my_new_runs, update_percent_done, config, compose
+from redsample.outline import get_run_name, get_my_new_runs, update_percent_done, config, compose
 from past.builtins import map
 
 '''
