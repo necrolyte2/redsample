@@ -12,6 +12,8 @@ from redmine import exceptions
 import shutil
 from past.builtins import map, filter
 
+#TODO: require runpath. Only match the issue with one with the same runpath.
+
 #TODO: Currently we just load all issues once and check sample against them, should provide another option?
 config = config.load_default()
 if not config['apikey'] or config['apikey'] in ['fromyouraccount', 'default']:
